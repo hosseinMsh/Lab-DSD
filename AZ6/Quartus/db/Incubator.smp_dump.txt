@@ -1,0 +1,12 @@
+
+State Machine - |TemperatureControl|next_state
+Name next_state.S1 next_state.S3 next_state.S2 
+next_state.S1 0 0 0 
+next_state.S2 1 0 1 
+next_state.S3 1 1 0 
+
+State Machine - |TemperatureControl|current_state
+Name current_state.S1 current_state.S3 current_state.S2 
+current_state.S1 0 0 0 
+current_state.S2 1 0 1 
+current_state.S3 1 1 0 

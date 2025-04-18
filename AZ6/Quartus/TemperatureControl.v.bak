@@ -1,0 +1,58 @@
+module TemperatureControl (
+    input wire [6:0] temperature, // دما، ورودی 7 بیتی
+    output reg cooler,             // کولر
+    output reg heater,             // هیتر
+    output reg [1:0] fanSpeed      // سرعت فن (2 بیت)
+);
+    // حالت‌ها
+    typedef enum reg [1:0] {
+        S1 = 2'b00, // Heater: OFF, Cooler: OFF
+        S2 = 2'b01, // Heater: OFF, Cooler: ON
+        S3 = 2'b10  // Heater: ON, Cooler: OFF
+    } StateType;
+
+    StateType state;
+
+    always @(*) begin
+        // تنظیم پیش فرض
+        cooler = 0;
+        heater = 0;
+        fanSpeed = 2'b00;
+
+        // جدول حالات
+        case (state)
+            S1: begin
+                // حالت 1
+                if (temperature < 15) begin
+                    heater = 1;     // روشن کردن هیتر
+                    state = S3;     // переход به حالت 3
+                end else if (temperature > 30) begin
+                    state = S2;     // переход به حالت 2
+                end
+            end
+
+            S2: begin
+                // حالت 2
+                cooler = 1;       // روشن کردن کولر
+                if (temperature < 25) begin
+                    state = S1;   // переход به حالت 1
+                end else if (temperature >= 35 && temperature < 40) begin
+                    fanSpeed = 2'b01; // سرعت فن: 4 RPM
+                end else if (temperature >= 40 && temperature < 45) begin
+                    fanSpeed = 2'b10; // سرعت فن: 6 RPM
+                end else if (temperature >= 45) begin
+                    fanSpeed = 2'b11; // سرعت فن: 8 RPM
+                end
+            end
+
+            S3: begin
+                // حالت 3
+                heater = 1;       // روشن کردن هیتر
+                if (temperature > 35) begin
+                    state = S1;   // переход به حالت 1
+                end
+            end
+        endcase
+    end
+
+endmodule
