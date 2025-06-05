@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/logo.png" alt="لوگوی دانشگاه" width="200"/>
+  <img src="/AZ6/images/logo.png" alt="لوگوی دانشگاه" width="200"/>
 </p>
 
 
