@@ -1,0 +1,39 @@
+module uart_rx (
+    input wire clk,
+    input wire rst,
+    input wire rx,
+    output reg [6:0] data_out,
+    output reg valid
+);
+    reg [3:0] bit_cnt;
+    reg [7:0] buffer;
+    reg receiving;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            bit_cnt <= 0;
+            receiving <= 0;
+            valid <= 0;
+        end else begin
+            if (!receiving && rx == 0) begin
+                receiving <= 1;
+                bit_cnt <= 0;
+                valid <= 0;
+            end else if (receiving) begin
+                buffer[bit_cnt] <= rx;
+                bit_cnt <= bit_cnt + 1;
+
+                if (bit_cnt == 7) begin
+                    // Check parity
+                    if (^buffer[6:0] == buffer[7]) begin
+                        data_out <= buffer[6:0];
+                        valid <= 1;
+                    end else begin
+                        valid <= 0; // Parity error
+                    end
+                    receiving <= 0;
+                end
+            end
+        end
+    end
+endmodule

@@ -1,0 +1,35 @@
+module uart_tx (
+    input wire clk,
+    input wire rst,
+    input wire start,
+    input wire [6:0] data, // 7-bit ASCII input
+    output reg tx,
+    output reg busy
+);
+    reg [3:0] bit_cnt;
+    reg [9:0] frame;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            tx <= 1;
+            bit_cnt <= 0;
+            busy <= 0;
+        end else begin
+            if (start && !busy) begin
+                // Prepare frame: Start(0) + Data + Parity + Stop(1)
+                frame[0] <= 0;                       // Start
+                frame[7:1] <= data;                  // 7-bit data
+                frame[8] <= ^data;                   // Even parity bit
+                frame[9] <= 1;                       // Stop bit
+                busy <= 1;
+                bit_cnt <= 0;
+            end else if (busy) begin
+                tx <= frame[bit_cnt];
+                bit_cnt <= bit_cnt + 1;
+                if (bit_cnt == 9) begin
+                    busy <= 0;
+                end
+            end
+        end
+    end
+endmodule

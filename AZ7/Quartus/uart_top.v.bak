@@ -1,0 +1,29 @@
+module uart_top (
+    input wire clk,
+    input wire rst,
+    input wire start_btn,     // مثلاً دکمه ارسال
+    input wire [6:0] data_in, // ورودی داده (از سوییچ)
+    output wire tx,
+    input wire rx,
+    output wire [6:0] data_out,
+    output wire valid_led
+);
+
+    uart_tx tx_inst (
+        .clk(clk),
+        .rst(rst),
+        .start(start_btn),
+        .data(data_in),
+        .tx(tx),
+        .busy()                // می‌تونی یه LED دیگه بزاری برای نمایش busy
+    );
+
+    uart_rx rx_inst (
+        .clk(clk),
+        .rst(rst),
+        .rx(rx),
+        .data_out(data_out),
+        .valid(valid_led)
+    );
+
+endmodule
